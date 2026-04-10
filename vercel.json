@@ -1,11 +1,9 @@
 {
   "version": 2,
-  "public": true,
-  "name": "ping-platform",
+  "buildCommand": "npm run build",
+  "outputDirectory": "frontend/dist",
+  "framework": null,
   "rewrites": [
     { "source": "/(.*)", "destination": "/$1" }
-  ],
-  "redirects": [
-    { "source": "/", "destination": "/frontend/dist/index.html", "permanent": false }
   ]
 }
