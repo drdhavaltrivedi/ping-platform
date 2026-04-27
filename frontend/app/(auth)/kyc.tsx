@@ -1,10 +1,14 @@
 import React, { useState } from 'react';
 import {
   View, Text, StyleSheet, SafeAreaView, TouchableOpacity, ScrollView,
+  Dimensions, Animated,
 } from 'react-native';
 import { useRouter } from 'expo-router';
 import { Colors, Spacing, Radii, Typography } from '../../constants/Theme';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
+import { LinearGradient } from 'expo-linear-gradient';
+
+const { width } = Dimensions.get('window');
 
 type Step = {
   id: string;
@@ -17,16 +21,16 @@ type Step = {
 const STEPS: Step[] = [
   {
     id: 'identity',
-    icon: 'badge-account-horizontal-outline',
-    title: 'Verify your identity',
-    description: 'Scan your passport or national ID. We\'ll also take a quick selfie to match.',
-    badge: 'Required',
+    icon: 'face-recognition',
+    title: 'Identity Verification',
+    description: 'A quick scan of your ID and a 3D selfie to secure your account.',
+    badge: 'Secure',
   },
   {
     id: 'card',
-    icon: 'credit-card-outline',
-    title: 'Link a payment method',
-    description: 'Add a debit or credit card. Your card is securely tokenised — we never store the number.',
+    icon: 'credit-card-plus-outline',
+    title: 'Funding Source',
+    description: 'Link your primary card. We use bank-grade encryption to protect your data.',
     badge: 'Required',
   },
 ];
@@ -43,189 +47,360 @@ export default function KYCScreen() {
     });
 
   const allDone = STEPS.every(s => completed.has(s.id));
+  const progress = (completed.size / STEPS.length);
 
   return (
     <SafeAreaView style={styles.safe}>
-      <ScrollView contentContainerStyle={styles.container}>
-        {/* Nav */}
-        <TouchableOpacity id="kyc-back-btn" style={styles.backBtn} onPress={() => router.back()}>
-          <MaterialCommunityIcons name="arrow-left" size={22} color={Colors.textPrimary} />
-          <Text style={styles.backLabel}>Back</Text>
-        </TouchableOpacity>
+      <ScrollView 
+        contentContainerStyle={styles.container}
+        showsVerticalScrollIndicator={false}
+      >
+        {/* Navigation Header */}
+        <View style={styles.navHeader}>
+          <TouchableOpacity 
+            style={styles.backBtn} 
+            onPress={() => router.back()}
+            activeOpacity={0.7}
+          >
+            <MaterialCommunityIcons name="chevron-left" size={28} color={Colors.textPrimary} />
+          </TouchableOpacity>
+          <Text style={styles.headerTitle}>Verification</Text>
+          <View style={{ width: 40 }} />
+        </View>
 
-        {/* Header */}
-        <View style={styles.header}>
-          <Text style={styles.heading}>Before you travel</Text>
+        {/* Hero Section */}
+        <View style={styles.heroSection}>
+          <Text style={styles.heading}>Final Steps</Text>
           <Text style={styles.subheading}>
-            We need to verify your identity and link a funding source. This keeps your money safe and meets international payment regulations.
+            Help us verify your identity to unlock international payments and higher limits.
           </Text>
         </View>
 
-        {/* Progress bar */}
-        <View style={styles.progressBar}>
-          <View
-            style={[
-              styles.progressFill,
-              { width: `${(completed.size / STEPS.length) * 100}%` },
-            ]}
-          />
+        {/* Progress Card */}
+        <View style={styles.progressCard}>
+          <View style={styles.progressHeader}>
+            <Text style={styles.progressText}>Setup Progress</Text>
+            <Text style={styles.percentText}>{Math.round(progress * 100)}%</Text>
+          </View>
+          <View style={styles.progressTrack}>
+            <LinearGradient
+              colors={[Colors.brand, Colors.brandLight]}
+              start={{ x: 0, y: 0 }}
+              end={{ x: 1, y: 0 }}
+              style={[styles.progressFill, { width: `${progress * 100}%` }]}
+            />
+          </View>
+          <Text style={styles.remainingText}>
+            {completed.size === STEPS.length 
+              ? 'Ready to go!' 
+              : `${STEPS.length - completed.size} step${STEPS.length - completed.size > 1 ? 's' : ''} remaining`}
+          </Text>
         </View>
-        <Text style={styles.progressLabel}>
-          {completed.size} of {STEPS.length} complete
-        </Text>
 
-        {/* Steps */}
+        {/* Steps List */}
         <View style={styles.stepList}>
-          {STEPS.map(step => {
-            const done = completed.has(step.id);
+          {STEPS.map((step, index) => {
+            const isDone = completed.has(step.id);
             return (
               <TouchableOpacity
                 key={step.id}
-                id={`kyc-step-${step.id}`}
-                style={[styles.stepCard, done && styles.stepCardDone]}
+                style={[styles.stepCard, isDone && styles.stepCardDone]}
                 onPress={() => toggle(step.id)}
-                activeOpacity={0.75}
+                activeOpacity={0.9}
               >
-                <View style={[styles.stepIcon, done && styles.stepIconDone]}>
+                <View style={[styles.iconBox, isDone && styles.iconBoxDone]}>
                   <MaterialCommunityIcons
-                    name={done ? 'check' : step.icon}
-                    size={24}
-                    color={done ? '#fff' : Colors.brand}
+                    name={isDone ? 'check-bold' : step.icon}
+                    size={26}
+                    color={isDone ? '#fff' : Colors.brand}
                   />
                 </View>
-                <View style={styles.stepBody}>
-                  <View style={styles.stepTitleRow}>
-                    <Text style={[styles.stepTitle, done && styles.stepTitleDone]}>
+                
+                <View style={styles.stepContent}>
+                  <View style={styles.stepHeaderRow}>
+                    <Text style={[styles.stepTitle, isDone && styles.stepTitleDone]}>
                       {step.title}
                     </Text>
-                    <View style={[styles.badge, done && styles.badgeDone]}>
-                      <Text style={[styles.badgeText, done && styles.badgeTextDone]}>
-                        {done ? 'Done' : step.badge}
+                    <View style={[styles.badge, isDone && styles.badgeDone]}>
+                      <Text style={[styles.badgeText, isDone && styles.badgeTextDone]}>
+                        {isDone ? 'COMPLETED' : step.badge}
                       </Text>
                     </View>
                   </View>
-                  <Text style={styles.stepDescription}>{step.description}</Text>
+                  <Text style={styles.stepDesc}>{step.description}</Text>
                 </View>
-                {!done && (
-                  <MaterialCommunityIcons
-                    name="chevron-right"
-                    size={20}
-                    color={Colors.textMuted}
-                    style={styles.chevron}
-                  />
+
+                {!isDone && (
+                  <View style={styles.arrowBox}>
+                    <MaterialCommunityIcons name="chevron-right" size={20} color={Colors.textMuted} />
+                  </View>
                 )}
               </TouchableOpacity>
             );
           })}
         </View>
 
-        {/* Trust badges */}
-        <View style={styles.trustRow}>
-          <MaterialCommunityIcons name="shield-check-outline" size={16} color={Colors.textMuted} />
-          <Text style={styles.trustText}>256-bit SSL encrypted · PCI DSS compliant · FATF aligned KYC</Text>
-        </View>
+        {/* Security Notice */}
+        <LinearGradient
+          colors={['#F8FAFC', '#F1F5F9']}
+          style={styles.securityBanner}
+        >
+          <MaterialCommunityIcons name="shield-lock" size={24} color={Colors.brand} />
+          <View style={styles.securityTextContent}>
+            <Text style={styles.securityTitle}>Bank-Grade Security</Text>
+            <Text style={styles.securityDesc}>
+              Your data is encrypted using AES-256 and never shared with third parties.
+            </Text>
+          </View>
+        </LinearGradient>
 
-        {/* CTA */}
+        {/* Action Button */}
         <TouchableOpacity
-          id="kyc-complete-btn"
-          style={[styles.ctaButton, !allDone && styles.ctaDisabled]}
+          style={[styles.ctaBtn, !allDone && styles.ctaBtnDisabled]}
           onPress={() => router.replace('/(tabs)')}
           disabled={!allDone}
-          activeOpacity={0.85}
+          activeOpacity={0.8}
         >
-          <Text style={styles.ctaText}>Complete Setup</Text>
-          <MaterialCommunityIcons name="arrow-right" size={18} color="#fff" />
+          <LinearGradient
+            colors={allDone ? [Colors.brand, Colors.brandLight] : [Colors.bgSubtle, Colors.bgSubtle]}
+            style={styles.ctaGradient}
+            start={{ x: 0, y: 0 }}
+            end={{ x: 1, y: 0 }}
+          >
+            <Text style={[styles.ctaText, !allDone && styles.ctaTextDisabled]}>
+              Start Using Ping
+            </Text>
+            <MaterialCommunityIcons 
+              name="rocket-launch" 
+              size={20} 
+              color={allDone ? "#fff" : Colors.textMuted} 
+            />
+          </LinearGradient>
         </TouchableOpacity>
+
       </ScrollView>
     </SafeAreaView>
   );
 }
 
 const styles = StyleSheet.create({
-  safe: { flex: 1, backgroundColor: Colors.bgWhite },
-  container: { padding: Spacing.lg, paddingBottom: Spacing.xxl },
-  backBtn: {
+  safe: {
+    flex: 1,
+    backgroundColor: Colors.bgBase,
+  },
+  container: {
+    paddingHorizontal: Spacing.xl,
+    paddingTop: Spacing.md,
+    paddingBottom: Spacing.xxl,
+  },
+  navHeader: {
     flexDirection: 'row',
     alignItems: 'center',
-    gap: Spacing.xs,
+    justifyContent: 'space-between',
+    marginBottom: Spacing.xl,
+    marginTop: Spacing.sm,
+  },
+  backBtn: {
+    width: 44,
+    height: 44,
+    borderRadius: 12,
+    backgroundColor: Colors.bgWhite,
+    justifyContent: 'center',
+    alignItems: 'center',
+    borderWidth: 1,
+    borderColor: Colors.border,
+  },
+  headerTitle: {
+    fontSize: 18,
+    fontWeight: '700',
+    color: Colors.textPrimary,
+  },
+  heroSection: {
     marginBottom: Spacing.xl,
   },
-  backLabel: { fontSize: 15, color: Colors.textPrimary, fontWeight: '500' },
-  header: { marginBottom: Spacing.lg },
-  heading: { ...Typography.hero, color: Colors.textPrimary, marginBottom: Spacing.sm },
-  subheading: { ...Typography.body, color: Colors.textSecondary },
-  progressBar: {
-    height: 4,
-    backgroundColor: Colors.bgSubtle,
-    borderRadius: Radii.full,
+  heading: {
+    fontSize: 34,
+    fontWeight: '800',
+    color: Colors.textPrimary,
+    letterSpacing: -1,
+    marginBottom: 8,
+  },
+  subheading: {
+    fontSize: 16,
+    color: Colors.textSecondary,
+    lineHeight: 22,
+    opacity: 0.8,
+  },
+  progressCard: {
+    backgroundColor: Colors.bgWhite,
+    borderRadius: Radii.xl,
+    padding: Spacing.lg,
+    marginBottom: Spacing.xl,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.05,
+    shadowRadius: 10,
+    elevation: 3,
+  },
+  progressHeader: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    marginBottom: 12,
+  },
+  progressText: {
+    fontSize: 15,
+    fontWeight: '700',
+    color: Colors.textPrimary,
+  },
+  percentText: {
+    fontSize: 15,
+    fontWeight: '800',
+    color: Colors.brand,
+  },
+  progressTrack: {
+    height: 10,
+    backgroundColor: Colors.bgBase,
+    borderRadius: 5,
     overflow: 'hidden',
-    marginBottom: Spacing.xs,
+    marginBottom: 10,
   },
   progressFill: {
     height: '100%',
-    backgroundColor: Colors.success,
-    borderRadius: Radii.full,
+    borderRadius: 5,
   },
-  progressLabel: { ...Typography.caption, color: Colors.textMuted, marginBottom: Spacing.xl },
-  stepList: { gap: Spacing.md, marginBottom: Spacing.xl },
+  remainingText: {
+    fontSize: 13,
+    color: Colors.textMuted,
+    fontWeight: '600',
+  },
+  stepList: {
+    gap: Spacing.md,
+    marginBottom: Spacing.xl,
+  },
   stepCard: {
     flexDirection: 'row',
-    alignItems: 'flex-start',
+    alignItems: 'center',
     backgroundColor: Colors.bgWhite,
-    borderWidth: 1.5,
-    borderColor: Colors.border,
-    borderRadius: Radii.lg,
+    borderRadius: Radii.xl,
     padding: Spacing.md,
+    borderWidth: 2,
+    borderColor: 'transparent',
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.03,
+    shadowRadius: 5,
+    elevation: 2,
   },
   stepCardDone: {
     borderColor: Colors.success,
-    backgroundColor: Colors.successBg,
+    backgroundColor: '#F0FDF4',
   },
-  stepIcon: {
-    width: 48,
-    height: 48,
-    borderRadius: 24,
-    backgroundColor: '#EBF4FF',
+  iconBox: {
+    width: 54,
+    height: 54,
+    borderRadius: 18,
+    backgroundColor: '#E6F0FF',
     justifyContent: 'center',
     alignItems: 'center',
     marginRight: Spacing.md,
-    flexShrink: 0,
   },
-  stepIconDone: { backgroundColor: Colors.success },
-  stepBody: { flex: 1 },
-  stepTitleRow: { flexDirection: 'row', alignItems: 'center', gap: Spacing.sm, marginBottom: 4 },
-  stepTitle: { ...Typography.h3, color: Colors.textPrimary, flex: 1 },
-  stepTitleDone: { color: Colors.success },
-  badge: {
-    backgroundColor: '#FFF4E5',
-    paddingHorizontal: 8,
-    paddingVertical: 2,
-    borderRadius: Radii.sm,
+  iconBoxDone: {
+    backgroundColor: Colors.success,
   },
-  badgeDone: { backgroundColor: Colors.success },
-  badgeText: { ...Typography.caption, color: Colors.warning, fontWeight: '600' },
-  badgeTextDone: { color: '#fff' },
-  stepDescription: { ...Typography.body, color: Colors.textSecondary, fontSize: 13 },
-  chevron: { alignSelf: 'center', marginLeft: Spacing.xs },
-  trustRow: {
+  stepContent: {
+    flex: 1,
+  },
+  stepHeaderRow: {
     flexDirection: 'row',
     alignItems: 'center',
-    gap: Spacing.xs,
-    marginBottom: Spacing.xl,
-    backgroundColor: Colors.bgSubtle,
-    padding: Spacing.md,
-    borderRadius: Radii.md,
+    justifyContent: 'space-between',
+    marginBottom: 4,
   },
-  trustText: { ...Typography.caption, color: Colors.textMuted, flex: 1 },
-  ctaButton: {
+  stepTitle: {
+    fontSize: 17,
+    fontWeight: '700',
+    color: Colors.textPrimary,
+  },
+  stepTitleDone: {
+    color: Colors.success,
+  },
+  badge: {
+    backgroundColor: '#F1F5F9',
+    paddingHorizontal: 8,
+    paddingVertical: 3,
+    borderRadius: 6,
+  },
+  badgeDone: {
+    backgroundColor: Colors.success,
+  },
+  badgeText: {
+    fontSize: 10,
+    fontWeight: '800',
+    color: Colors.textSecondary,
+  },
+  badgeTextDone: {
+    color: '#fff',
+  },
+  stepDesc: {
+    fontSize: 13,
+    color: Colors.textSecondary,
+    lineHeight: 18,
+    opacity: 0.7,
+  },
+  arrowBox: {
+    marginLeft: 8,
+  },
+  securityBanner: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    padding: Spacing.lg,
+    borderRadius: Radii.lg,
+    marginBottom: Spacing.xl,
+    gap: 16,
+  },
+  securityTextContent: {
+    flex: 1,
+  },
+  securityTitle: {
+    fontSize: 15,
+    fontWeight: '700',
+    color: Colors.textPrimary,
+    marginBottom: 2,
+  },
+  securityDesc: {
+    fontSize: 12,
+    color: Colors.textSecondary,
+    lineHeight: 16,
+    opacity: 0.8,
+  },
+  ctaBtn: {
+    height: 60,
+    borderRadius: Radii.full,
+    overflow: 'hidden',
+    shadowColor: Colors.brand,
+    shadowOffset: { width: 0, height: 6 },
+    shadowOpacity: 0.3,
+    shadowRadius: 12,
+    elevation: 8,
+  },
+  ctaBtnDisabled: {
+    shadowOpacity: 0,
+    elevation: 0,
+  },
+  ctaGradient: {
+    flex: 1,
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'center',
-    gap: Spacing.sm,
-    backgroundColor: Colors.brand,
-    borderRadius: Radii.md,
-    paddingVertical: 16,
+    gap: 10,
   },
-  ctaDisabled: { backgroundColor: Colors.bgSubtle },
-  ctaText: { color: '#fff', fontSize: 16, fontWeight: '700' },
+  ctaText: {
+    color: '#fff',
+    fontSize: 18,
+    fontWeight: '800',
+  },
+  ctaTextDisabled: {
+    color: Colors.textMuted,
+  },
 });
