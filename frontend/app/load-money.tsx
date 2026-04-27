@@ -21,29 +21,65 @@ export default function LoadMoneyModal() {
   const usdAmount = parsedAmount * exchangeRate - fee;
 
   const handleConfirm = async () => {
+    if (parsedAmount <= 0) return;
+    
     // Face ID simulation
     Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
     setIsProcessing(true);
 
-    // Simulate Stripe Processing
-    setTimeout(() => {
-      setIsProcessing(false);
-      setIsSuccess(true);
-      loadMoney(usdAmount);
+    try {
+      // Real Stripe API call to test mode
+      const amountInCents = Math.round(parsedAmount * 100);
+      const stripeSecretKey = process.env.EXPO_PUBLIC_STRIPE_SECRET_KEY;
       
-      // Simulate Success Confetti
-      Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
-      
-      Animated.spring(scaleAnim, {
-        toValue: 1,
-        friction: 4,
-        useNativeDriver: true,
-      }).start();
+      if (!stripeSecretKey) {
+        throw new Error('Stripe Secret Key is missing in environment variables.');
+      }
 
-      setTimeout(() => {
-        router.back();
-      }, 1500);
-    }, 2000);
+      
+      const response = await fetch('https://api.stripe.com/v1/payment_intents', {
+        method: 'POST',
+        headers: {
+          'Authorization': `Bearer ${stripeSecretKey}`,
+          'Content-Type': 'application/x-www-form-urlencoded',
+        },
+        body: new URLSearchParams({
+          amount: amountInCents.toString(),
+          currency: 'mxn',
+          payment_method: 'pm_card_visa', // Stripe test card
+          confirm: 'true',
+          description: 'Ping Investor Demo - Load Money',
+          return_url: 'https://example.com/return'
+        }).toString(),
+      });
+
+      const data = await response.json();
+
+      if (data.status === 'succeeded' || data.status === 'requires_action') {
+        setIsProcessing(false);
+        setIsSuccess(true);
+        loadMoney(usdAmount);
+        
+        // Simulate Success Confetti
+        Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
+        
+        Animated.spring(scaleAnim, {
+          toValue: 1,
+          friction: 4,
+          useNativeDriver: true,
+        }).start();
+
+        setTimeout(() => {
+          router.back();
+        }, 1500);
+      } else {
+        throw new Error(data.error?.message || 'Payment failed');
+      }
+    } catch (error) {
+      setIsProcessing(false);
+      console.error('Stripe Error:', error);
+      alert('Payment Failed: ' + error);
+    }
   };
 
   if (isSuccess) {

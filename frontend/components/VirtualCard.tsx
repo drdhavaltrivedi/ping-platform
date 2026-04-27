@@ -3,6 +3,8 @@ import { View, Text, StyleSheet, Animated, TouchableOpacity, Dimensions } from '
 import { Colors, Radii } from '../constants/Theme';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 
+import demoData from '../constants/demo-data.json';
+
 const { width } = Dimensions.get('window');
 
 export default function VirtualCard() {
@@ -58,11 +60,11 @@ export default function VirtualCard() {
       <Animated.View style={[styles.card, styles.cardBack, { transform: [{ rotateY: backInterpolate }], opacity: backOpacity }]}>
         <View style={styles.magStripe} />
         <View style={styles.cvvStrip}>
-          <Text style={styles.cvvText}>CVV 123</Text>
+          <Text style={styles.cvvText}>CVV {demoData.cvv}</Text>
         </View>
         <View style={styles.backDetails}>
-          <Text style={styles.cardNumber}>4242  4242  4242  4242</Text>
-          <Text style={styles.cardExpiry}>EXP 12/28</Text>
+          <Text style={styles.cardNumber}>{demoData.pan}</Text>
+          <Text style={styles.cardExpiry}>EXP {demoData.expMonth.toString().padStart(2, '0')}/{demoData.expYear.toString().slice(-2)}</Text>
         </View>
         <View style={styles.cardFooterBack}>
            <MaterialCommunityIcons name="cc-visa" size={32} color="#fff" />

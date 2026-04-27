@@ -1,0 +1,9 @@
+{
+  "cardId": "ic_mock_123",
+  "cardholderId": "ich_mock_123",
+  "last4": "4242",
+  "expMonth": 12,
+  "expYear": 2028,
+  "pan": "4242 4242 4242 4242",
+  "cvv": "123"
+}
