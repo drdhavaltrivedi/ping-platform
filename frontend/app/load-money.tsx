@@ -167,8 +167,9 @@ export default function LoadMoneyModal() {
             </View>
           )}
         </TouchableOpacity>
-      </KeyboardAvoidingView>
-    </SafeAreaView>
+      </View>
+    </KeyboardAvoidingView>
+  </SafeAreaView>
   );
 }
 
