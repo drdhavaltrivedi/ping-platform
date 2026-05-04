@@ -108,9 +108,9 @@ export default function ExploreScreen() {
       >
         {/* Hero */}
         <View style={styles.hero}>
-          <Text style={styles.heroTitle}>Travel smarter.{'\n'}Pay like a local.</Text>
+          <Text style={styles.heroTitle}>Pay like you belong!</Text>
           <Text style={styles.heroSubtitle}>
-            Ping translates your payments into the local rail — wherever you go.
+            The bridge between global money and local payments.
           </Text>
         </View>
 
@@ -187,6 +187,72 @@ export default function ExploreScreen() {
                 />
               </View>
               {i < arr.length - 1 && <View style={styles.stepDivider} />}
+            </View>
+          ))}
+        </View>
+
+        {/* Why Ping Wins */}
+        <Text style={styles.sectionTitle}>Why Ping Wins</Text>
+        <View style={styles.comparisonCard}>
+          <View style={styles.comparisonHeader}>
+            <Text style={styles.comparisonHeaderLabel}>Feature</Text>
+            <Text style={styles.comparisonHeaderLabel}>Venmo</Text>
+            <Text style={styles.comparisonHeaderLabel}>Ping</Text>
+          </View>
+          {[
+            { label: 'No US Phone Needed', venmo: false, ping: true },
+            { label: 'No US Bank Required', venmo: false, ping: true },
+            { label: 'No App for Receiver', venmo: false, ping: true },
+            { label: 'Traveler Focused', venmo: false, ping: true },
+          ].map((item, i) => (
+            <View key={i} style={styles.comparisonRow}>
+              <Text style={styles.comparisonLabel}>{item.label}</Text>
+              <View style={styles.comparisonCell}>
+                <MaterialCommunityIcons 
+                  name={item.venmo ? "check-circle" : "close-circle"} 
+                  size={18} 
+                  color={item.venmo ? Colors.success : Colors.error} 
+                />
+              </View>
+              <View style={styles.comparisonCell}>
+                <MaterialCommunityIcons 
+                  name={item.ping ? "check-circle" : "close-circle"} 
+                  size={18} 
+                  color={item.ping ? Colors.success : Colors.error} 
+                />
+              </View>
+            </View>
+          ))}
+        </View>
+
+        {/* Our Story */}
+        <Text style={styles.sectionTitle}>Our Story</Text>
+        <View style={styles.storyCard}>
+          <Text style={styles.storyTitle}>Ithaca, 2023 — Where it all began</Text>
+          <Text style={styles.storyBody}>
+            "Everyone could Venmo. Except me. No U.S. number. No local bank account. No access to the apps my friends used."
+          </Text>
+          <Text style={styles.storyBody}>
+            That night, we realized: travelers aren't just foreign, they're invisible in the local digital payment ecosystem. Ping was built to change that.
+          </Text>
+        </View>
+
+        {/* Team */}
+        <Text style={styles.sectionTitle}>The Team</Text>
+        <View style={styles.teamGrid}>
+          {[
+            { name: 'Luipa Mondoka', role: 'Founder', bio: 'Zambian-born investment professional with 15 years experience.', icon: 'account-tie' },
+            { name: 'Marco Yammine', role: 'CTO', bio: 'Italian-born seasoned full-stack engineer and software architect.', icon: 'code-braces' },
+          ].map(member => (
+            <View key={member.name} style={styles.teamCard}>
+              <View style={styles.teamHeader}>
+                <MaterialCommunityIcons name={member.icon as any} size={24} color={Colors.brand} />
+                <View>
+                  <Text style={styles.teamName}>{member.name}</Text>
+                  <Text style={styles.teamRole}>{member.role}</Text>
+                </View>
+              </View>
+              <Text style={styles.teamBio}>{member.bio}</Text>
             </View>
           ))}
         </View>
@@ -366,4 +432,97 @@ const styles = StyleSheet.create({
     paddingVertical: Spacing.sm,
   },
   ctaBannerBtnText: { fontSize: 14, fontWeight: '700', color: Colors.brand },
+
+  // New Sections
+  comparisonCard: {
+    marginHorizontal: Spacing.lg,
+    backgroundColor: Colors.bgWhite,
+    borderRadius: Radii.xl,
+    padding: Spacing.md,
+    borderWidth: 1,
+    borderColor: Colors.border,
+  },
+  comparisonHeader: {
+    flexDirection: 'row',
+    borderBottomWidth: 1,
+    borderBottomColor: Colors.border,
+    paddingBottom: Spacing.sm,
+    marginBottom: Spacing.sm,
+  },
+  comparisonHeaderLabel: {
+    flex: 1,
+    fontSize: 12,
+    fontWeight: '700',
+    color: Colors.textMuted,
+    textAlign: 'center',
+  },
+  comparisonRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    paddingVertical: Spacing.sm,
+  },
+  comparisonLabel: {
+    flex: 1,
+    fontSize: 13,
+    color: Colors.textPrimary,
+    fontWeight: '600',
+  },
+  comparisonCell: {
+    flex: 1,
+    alignItems: 'center',
+  },
+
+  storyCard: {
+    marginHorizontal: Spacing.lg,
+    backgroundColor: '#F8FAFC',
+    borderRadius: Radii.xl,
+    padding: Spacing.lg,
+    borderWidth: 1,
+    borderColor: Colors.border,
+    gap: Spacing.md,
+  },
+  storyTitle: {
+    fontSize: 18,
+    fontWeight: '700',
+    color: Colors.brand,
+  },
+  storyBody: {
+    fontSize: 14,
+    color: Colors.textSecondary,
+    lineHeight: 20,
+    fontStyle: 'italic',
+  },
+
+  teamGrid: {
+    paddingHorizontal: Spacing.lg,
+    gap: Spacing.md,
+  },
+  teamCard: {
+    backgroundColor: Colors.bgWhite,
+    borderRadius: Radii.xl,
+    padding: Spacing.md,
+    borderWidth: 1,
+    borderColor: Colors.border,
+    gap: Spacing.sm,
+  },
+  teamHeader: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: Spacing.md,
+  },
+  teamName: {
+    fontSize: 16,
+    fontWeight: '700',
+    color: Colors.textPrimary,
+  },
+  teamRole: {
+    fontSize: 12,
+    color: Colors.brandLight,
+    fontWeight: '600',
+  },
+  teamBio: {
+    fontSize: 13,
+    color: Colors.textSecondary,
+    lineHeight: 18,
+  },
 });

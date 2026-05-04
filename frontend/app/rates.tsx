@@ -22,27 +22,27 @@ const RATES: RateItem[] = [
   {
     from: 'USD', fromFlag: '🇺🇸', to: 'ZMW', toFlag: '🇿🇲',
     rail: 'M-Pesa Zambia', rate: '23.08', mid: '23.12',
-    fee: '0.5%', trend: 'up', trendPct: '+0.3%',
+    fee: '0.6%', trend: 'up', trendPct: '+0.3%',
   },
   {
     from: 'USD', fromFlag: '🇺🇸', to: 'KES', toFlag: '🇰🇪',
     rail: 'M-Pesa Kenya', rate: '129.50', mid: '129.80',
-    fee: '0.5%', trend: 'down', trendPct: '-0.2%',
+    fee: '0.6%', trend: 'down', trendPct: '-0.2%',
   },
   {
     from: 'USD', fromFlag: '🇺🇸', to: 'INR', toFlag: '🇮🇳',
     rail: 'UPI (Phase 2)', rate: '83.74', mid: '83.90',
-    fee: '0.4%', trend: 'flat', trendPct: '0.0%',
+    fee: '0.6%', trend: 'flat', trendPct: '0.0%',
   },
   {
     from: 'USD', fromFlag: '🇺🇸', to: 'TZS', toFlag: '🇹🇿',
     rail: 'M-Pesa Tanzania', rate: '2,580', mid: '2,590',
-    fee: '0.5%', trend: 'up', trendPct: '+0.6%',
+    fee: '0.6%', trend: 'up', trendPct: '+0.6%',
   },
   {
     from: 'USD', fromFlag: '🇺🇸', to: 'GHS', toFlag: '🇬🇭',
     rail: 'MTN MoMo (Phase 2)', rate: '15.28', mid: '15.35',
-    fee: '0.5%', trend: 'down', trendPct: '-0.1%',
+    fee: '0.6%', trend: 'down', trendPct: '-0.1%',
   },
 ];
 
